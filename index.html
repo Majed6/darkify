@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Darkify</title>
+    <style type="text/css">
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #form {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2em;
+        }
+
+        #darkify {
+            display: none;
+        }
+
+        /*A lights off page animation*/
+        @keyframes lightsOff {
+            0% {
+                background: white;
+            }
+            100% {
+                background: black;
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="form">
+    <input type="text"/>
+    <button onclick="escapeAndDarkify()">Darkify</button>
+</div>
+<iframe id="darkify" width="100%" height="100%"
+        src="https://example.com"
+        style="background: black;"></iframe>
+<script>
+    function darkify(escapedURI) {
+        let form = document.getElementById("form");
+        form.style.display = "none";
+        let uri = decodeURIComponent(escapedURI);
+        let iframe = document.getElementById("darkify");
+        iframe.src = uri;
+        iframe.style.display = "block";
+        window.history.pushState({}, "", "?url=" + escapedURI);
+    }
+
+    function escapeAndDarkify() {
+        let input = document.querySelector("input");
+        let escapedURI = encodeURIComponent(input.value);
+        // Apply lights off animation to the page
+        let body = document.querySelector("body");
+        body.style.animation = "lightsOff 4s";
+        body.style.animationFillMode = "forwards";
+        //wait for the animation to finish
+        setTimeout(() => {
+            darkify(escapedURI);
+        }, 4000);
+    }
+
+    let url = new URL(window.location.href);
+    let escapedURI = url.searchParams.get("url");
+    if (escapedURI) {
+        darkify(escapedURI);
+    } else {
+        let form = document.getElementById("form");
+        form.style.display = "block";
+    }
+</script>
+</body>
+</html>
